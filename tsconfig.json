@@ -22,8 +22,6 @@
       "@y/redis/storage/postgres": ["./src/storage/postgres.js"]
     }
   },
-  "exclude": [
-    "**/dist",
-    "./demos/blocksuite/"
-  ]
+  "include": ["src/**/*.ts", "src/**/*.js"],
+  "exclude": ["**/dist", "./demos/blocksuite/"]
 }
