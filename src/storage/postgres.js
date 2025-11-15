@@ -118,8 +118,16 @@ class PostgresStorage {
    * @return {Promise<void>}
    */
   async deleteReferences(room, docname, storeReferences) {
-    await this
-      .sql`DELETE FROM yredis_docs_v1 WHERE room = ${room} AND doc = ${docname} AND r in (${storeReferences})`;
+    if (!Array.isArray(storeReferences) || storeReferences.length === 0) {
+      return;
+    }
+    const refs = storeReferences.map((r) => Number(r));
+    await this.sql`
+      DELETE FROM yredis_docs_v1
+      WHERE room = ${room}
+        AND doc = ${docname}
+        AND r = ANY(${this.sql.array(refs)}::int4[])
+    `;
   }
 
   async destroy() {

@@ -1,5 +1,5 @@
 import * as Y from 'yjs'
-import * as uws from 'uws'
+import * as uws from 'uWebSockets.js'
 import * as promise from 'lib0/promise'
 import * as api from './api.js'
 import * as array from 'lib0/array'

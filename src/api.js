@@ -160,6 +160,10 @@ export class Api {
         })
       }
     })
+    // Prevent process crash on transient Redis socket errors; node-redis will auto-reconnect
+    this.redis.on('error', (err) => {
+      console.error('Redis client error', err)
+    })
   }
 
   /**
