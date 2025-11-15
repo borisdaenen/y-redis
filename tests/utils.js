@@ -2,7 +2,7 @@ import * as env from 'lib0/environment'
 import * as json from 'lib0/json'
 import * as ecdsa from 'lib0/crypto/ecdsa'
 
-import { createMemoryStorage } from '../src/storage/memory.js'
+import { createMemoryStorage } from '../dist/src/storage/memory.js'
 
 /**
  * @type {Array<{ destroy: function():Promise<void>}>}

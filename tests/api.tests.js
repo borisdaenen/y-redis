@@ -1,6 +1,6 @@
 import * as Y from 'yjs'
 import * as t from 'lib0/testing'
-import * as api from '../src/api.js'
+import * as api from '../dist/src/api.js'
 import * as encoding from 'lib0/encoding'
 import * as promise from 'lib0/promise'
 import * as redis from 'redis'

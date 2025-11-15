@@ -8,20 +8,15 @@
     "declaration": true,
     "declarationMap": true,
     "outDir": "./dist",
-    // "rootDir": "./src",
+    "rootDir": ".",
     "composite": true,
     "strict": true,
-    "noImplicitAny": true,
-    "emitDeclarationOnly": true,
+    "noImplicitAny": false,
+    "emitDeclarationOnly": false,
     "moduleResolution": "nodenext",
-    "baseUrl": "./",
-    "paths": {
-      "@y/redis": ["./src/index.js"],
-      "@y/redis/storage/memory": ["./src/storage/memory.js"],
-      "@y/redis/storage/s3": ["./src/storage/s3.js"],
-      "@y/redis/storage/postgres": ["./src/storage/postgres.js"]
-    }
+    "skipLibCheck": true,
+    "baseUrl": "./"
   },
-  "include": ["src/**/*.ts", "src/**/*.js"],
+  "include": ["src/**/*.ts", "src/**/*.js", "bin/**/*.ts", "bin/**/*.js"],
   "exclude": ["**/dist", "./demos/blocksuite/"]
 }

@@ -7,8 +7,8 @@ import * as redis from "redis";
 import { WebSocket } from "ws";
 import { WebsocketProvider } from "y-websocket";
 import * as Y from "yjs";
-import * as api from "../src/api.js";
-import { createYWebsocketServer } from "../src/server.js";
+import * as api from "../dist/src/api.js";
+import { createYWebsocketServer } from "../dist/src/server.js";
 import * as utils from "./utils.js";
 
 /**

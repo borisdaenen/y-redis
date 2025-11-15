@@ -1,6 +1,7 @@
 import * as env from "lib0/environment";
 import * as error from "lib0/error";
 import postgres from "postgres";
+import { AbstractStorage } from "src/storage.js";
 import * as Y from "yjs";
 
 /**
@@ -11,14 +12,14 @@ import * as Y from "yjs";
  * @param {Object} [conf]
  * @param {string} [conf.database]
  */
-export const createPostgresStorage = async ({ database } = {}) => {
+export const createPostgresStorage = async ({
+  database,
+}: { database?: string } = {}) => {
   // postgres://username:password@host:port/database
   const postgresUrl = env.ensureConf("postgres");
-  const postgresConf = {};
-  if (database) {
-    postgresConf.database = database;
-  }
-  const sql = postgres(postgresUrl, { database });
+  const sql: postgres.Sql = postgres(postgresUrl, {
+    database: database ?? undefined,
+  });
   const docsTableExists = await sql`
     SELECT EXISTS (
       SELECT FROM 
@@ -54,14 +55,14 @@ export const createPostgresStorage = async ({ database } = {}) => {
  *
  * @implements AbstractStorage
  */
-class PostgresStorage {
+class PostgresStorage implements AbstractStorage {
+  private sql: postgres.Sql;
   /**
    * @param {postgres.Sql} sql
    */
-  constructor(sql) {
+  constructor(sql: postgres.Sql) {
     this.sql = sql;
   }
-
   /**
    * @param {string} room
    * @param {string} docname
@@ -76,7 +77,6 @@ class PostgresStorage {
     )},${Y.encodeStateVector(ydoc)})
     `;
   }
-
   /**
    * @param {string} room
    * @param {string} docname
@@ -95,7 +95,6 @@ class PostgresStorage {
     const references = rows.map((row) => row.r);
     return { doc, references };
   }
-
   /**
    * @param {string} room
    * @param {string} docname
@@ -110,7 +109,6 @@ class PostgresStorage {
     }
     return rows.length === 0 ? null : rows[0].sv;
   }
-
   /**
    * @param {string} room
    * @param {string} docname
@@ -129,10 +127,8 @@ class PostgresStorage {
         AND r = ANY(${this.sql.array(refs)}::int4[])
     `;
   }
-
   async destroy() {
     await this.sql.end({ timeout: 5 }); // existing queries have five seconds to finish
   }
 }
-
 export const Storage = PostgresStorage;

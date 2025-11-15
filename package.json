@@ -9,22 +9,22 @@
     "url": "https://github.com/sponsors/dmonad"
   },
   "scripts": {
-    "dev": "concurrently -r 'npm run start:server' 'npm run start:worker'",
-    "start:server": "node --env-file .env ./bin/server.js",
-    "debug:server": "node --env-file .env --inspect-brk ./bin/worker.js ./bin/server.js",
-    "start:worker": "node --env-file .env ./bin/worker.js",
-    "debug:worker": "node --env-file .env --inspect-brk ./bin/worker.js",
+    "dev": "yarn dist && concurrently -r 'yarn start:server' 'yarn start:worker'",
+    "start:server": "node --env-file .env ./dist/bin/server.js",
+    "debug:server": "node --env-file .env --inspect-brk ./dist/bin/worker.js ./dist/bin/server.js",
+    "start:worker": "node --env-file .env ./dist/bin/worker.js",
+    "debug:worker": "node --env-file .env --inspect-brk ./dist/bin/worker.js",
     "redis": "docker run -p 6379:6379 redis",
     "dist": "tsc",
     "lint": "standard && tsc",
-    "test": "node --env-file .env tests/index.js",
-    "test-inspect": "node --env-file .env --inspect-brk tests/index.js",
-    "preversion": "npm run lint && npm run dist",
+    "test": "yarn dist && node --env-file .env tests/index.js",
+    "test-inspect": "yarn dist && node --env-file .env --inspect-brk tests/index.js",
+    "preversion": "yarn lint && yarn dist",
     "clean": "rm -rf **/dist "
   },
   "bin": {
-    "y-redis-server": "./bin/server.js",
-    "y-redis-worker": "./bin/worker.js"
+    "y-redis-server": "./dist/bin/server.js",
+    "y-redis-worker": "./dist/bin/worker.js"
   },
   "files": [
     "dist/*",
@@ -34,19 +34,19 @@
   "exports": {
     "./package.json": "./package.json",
     ".": {
-      "default": "./src/index.js",
+      "default": "./dist/src/index.js",
       "types": "./dist/src/index.d.ts"
     },
     "./storage/memory": {
-      "default": "./src/storage/memory.js",
+      "default": "./dist/src/storage/memory.js",
       "types": "./dist/src/storage/memory.d.ts"
     },
     "./storage/s3": {
-      "default": "./src/storage/s3.js",
+      "default": "./dist/src/storage/s3.js",
       "types": "./dist/src/storage/s3.d.ts"
     },
     "./storage/postgres": {
-      "default": "./src/storage/postgres.js",
+      "default": "./dist/src/storage/postgres.js",
       "types": "./dist/src/storage/postgres.d.ts"
     }
   },

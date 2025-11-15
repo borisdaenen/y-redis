@@ -146,11 +146,7 @@ export const registerYWebsocketServer = async (
     if (app.numSubscribers(stream) === 0) {
       subscriber.unsubscribe(stream, redisMessageSubscriber);
     }
-    console.debug("[ws] redisMessageSubscriber", {
-      stream,
-      numMessages: messages.length,
-      subscribers: app.numSubscribers(stream),
-    });
+
     if (messages.length === 0) {
       return;
     }
@@ -162,10 +158,7 @@ export const registerYWebsocketServer = async (
               encoding.writeUint8Array(encoder, message);
             })
           );
-    console.debug("[ws] publish to topic", {
-      stream,
-      payloadBytes: message.byteLength,
-    });
+
     app.publish(stream, message, true, false);
   };
   app.ws<User>(
@@ -214,28 +207,19 @@ export const registerYWebsocketServer = async (
           Buffer.from(ws.getRemoteAddressAsText()).toString(),
           ")",
         ]);
-        console.debug("[ws] open", {
-          uid: user.id,
-          room: user.room,
-          hasWriteAccess: user.hasWriteAccess,
-        });
+
         const stream = computeRedisRoomStreamName(
           user.room,
           "index",
           redisPrefix
         );
         user.subs.add(stream);
-        console.debug("[ws] subscribe", { uid: user.id, stream });
         ws.subscribe(stream);
         user.initialRedisSubId = subscriber.subscribe(
           stream,
           redisMessageSubscriber
         ).redisId;
-        console.debug("[ws] initial redis sub id", {
-          uid: user.id,
-          stream,
-          redisId: user.initialRedisSubId,
-        });
+
         const indexDoc = await client.getDoc(user.room, "index");
         if (indexDoc.ydoc.store.clients.size === 0) {
           initDocCallback(user.room, "index", client);
@@ -246,12 +230,7 @@ export const registerYWebsocketServer = async (
           const step1 = protocol.encodeSyncStep1(stateVector);
           const stateUpdate = Y.encodeStateAsUpdate(indexDoc.ydoc);
           const step2 = protocol.encodeSyncStep2(stateUpdate);
-          console.debug("[ws] sending initial sync", {
-            uid: user.id,
-            step1Bytes: step1.byteLength,
-            step2Bytes: step2.byteLength,
-            awarenessStates: indexDoc.awareness.states.size,
-          });
+
           ws.send(step1, true, false);
           ws.send(step2, true, true);
           if (indexDoc.awareness.states.size > 0) {
@@ -259,21 +238,14 @@ export const registerYWebsocketServer = async (
               indexDoc.awareness,
               array.from(indexDoc.awareness.states.keys())
             );
-            console.debug("[ws] sending initial awareness", {
-              uid: user.id,
-              bytes: awMsg.byteLength,
-            });
+
             ws.send(awMsg, true, true);
           }
         });
         if (isSmallerRedisId(indexDoc.redisLastId, user.initialRedisSubId)) {
           // our subscription is newer than the content that we received from the api
           // need to renew subscription id and make sure that we catch the latest content.
-          console.debug("[ws] ensureSubId", {
-            stream,
-            from: user.initialRedisSubId,
-            to: indexDoc.redisLastId,
-          });
+
           subscriber.ensureSubId(stream, indexDoc.redisLastId);
         }
       },
@@ -285,13 +257,7 @@ export const registerYWebsocketServer = async (
         const message = Buffer.from(
           messageBuffer.slice(0, messageBuffer.byteLength)
         );
-        console.debug("[ws] rx client message", {
-          uid: user.id,
-          len: message.length,
-          type0: message[0],
-          type1: message[1],
-          preview: previewBuffer(message),
-        });
+
         if (
           // filter out messages that we simply want to propagate to all clients
           // sync update or sync step 2
@@ -307,11 +273,7 @@ export const registerYWebsocketServer = async (
             decoding.readVarUint(decoder); // read length of awareness update
             const alen = decoding.readVarUint(decoder); // number of awareness updates
             const awId = decoding.readVarUint(decoder);
-            console.debug("[ws] awareness update", {
-              uid: user.id,
-              updatesCount: alen,
-              awarenessId: awId,
-            });
+
             if (
               alen === 1 &&
               (user.awarenessId === null || user.awarenessId === awId)
@@ -319,32 +281,14 @@ export const registerYWebsocketServer = async (
               // only update awareness if len=1
               user.awarenessId = awId;
               user.awarenessLastClock = decoding.readVarUint(decoder);
-              console.debug("[ws] awareness set", {
-                uid: user.id,
-                awarenessId: user.awarenessId,
-                clock: user.awarenessLastClock,
-              });
             }
           }
           client.addMessage(user.room, "index", message);
-        } else if (
-          message[0] === protocol.messageSync &&
-          message[1] === protocol.messageSyncStep1
-        ) {
-          // sync step 1
-          // can be safely ignored because we send the full initial state at the beginning
-          console.debug("[ws] ignore sync step 1", { uid: user.id });
-        } else {
-          console.error("Unexpected message type", message);
         }
       },
       close: (ws, code, message) => {
         const user = ws.getUserData();
-        console.debug("[ws] close", {
-          uid: user.id,
-          code,
-          message: Buffer.from(message).toString(),
-        });
+
         user.awarenessId &&
           client.addMessage(
             user.room,
@@ -367,10 +311,6 @@ export const registerYWebsocketServer = async (
           '")',
         ]);
         user.subs.forEach((topic) => {
-          console.debug("[ws] unsubscribe check", {
-            topic,
-            remainingSubscribers: app.numSubscribers(topic),
-          });
           if (app.numSubscribers(topic) === 0) {
             subscriber.unsubscribe(topic, redisMessageSubscriber);
           }

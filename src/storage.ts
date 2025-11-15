@@ -1,5 +1,5 @@
-import * as Y from 'yjs'
-import * as err from 'lib0/error'
+import * as err from "lib0/error";
+import * as Y from "yjs";
 
 export class AbstractStorage {
   /**
@@ -8,8 +8,8 @@ export class AbstractStorage {
    * @param {Y.Doc} _ydoc
    * @return {Promise<void>}
    */
-  persistDoc (_room, _docname, _ydoc) {
-    err.methodUnimplemented()
+  persistDoc(_room: string, _docname: string, _ydoc: Y.Doc): Promise<void> {
+    err.methodUnimplemented();
   }
 
   /**
@@ -17,8 +17,11 @@ export class AbstractStorage {
    * @param {string} _docname
    * @return {Promise<{ doc: Uint8Array, references: Array<any> }|null>}
    */
-  retrieveDoc (_room, _docname) {
-    err.methodUnimplemented()
+  retrieveDoc(
+    _room: string,
+    _docname: string
+  ): Promise<{ doc: Uint8Array; references: Array<any> } | null> {
+    err.methodUnimplemented();
   }
 
   /**
@@ -29,9 +32,12 @@ export class AbstractStorage {
    * @param {string} docname
    * @return {Promise<Uint8Array|null>}
    */
-  async retrieveStateVector (room, docname) {
-    const r = await this.retrieveDoc(room, docname)
-    return r ? Y.encodeStateVectorFromUpdateV2(r.doc) : null
+  async retrieveStateVector(
+    room: string,
+    docname: string
+  ): Promise<Uint8Array | null> {
+    const r = await this.retrieveDoc(room, docname);
+    return r ? Y.encodeStateVectorFromUpdateV2(r.doc) : null;
   }
 
   /**
@@ -40,10 +46,13 @@ export class AbstractStorage {
    * @param {Array<any>} _storeReferences
    * @return {Promise<void>}
    */
-  deleteReferences (_room, _docname, _storeReferences) {
-    err.methodUnimplemented()
+  deleteReferences(
+    _room: string,
+    _docname: string,
+    _storeReferences: Array<any>
+  ): Promise<void> {
+    err.methodUnimplemented();
   }
 
-  async destroy () {
-  }
+  async destroy() {}
 }

@@ -6,6 +6,7 @@ import * as uws from "uWebSockets.js";
 import { registerYWebsocketServer } from "../src/ws.js";
 
 class YWebsocketServer {
+  app: uws.TemplatedApp;
   /**
    * @param {uws.TemplatedApp} app
    */
